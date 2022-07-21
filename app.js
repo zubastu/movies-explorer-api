@@ -3,31 +3,27 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const { celebrate, Joi, errors } = require('celebrate');
-const { errorProcessing } = require('./utils/errorProcessing');
-const { MONGOOSE_URL } = require('./utils/urls');
+const { errors } = require('celebrate');
+const { errorProcessing } = require('./errors/errors');
+const { MONGOOSE_URL, PORT } = require('./utils/constants');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
+const routes = require('./routes/index');
 
-const { PORT = 3000 } = process.env;
 const app = express();
+
+mongoose.connect(MONGOOSE_URL, { useNewUrlParser: true, family: 4 });
 
 app.use(cors);
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(requestLogger);
-
+app.use(routes);
 app.use(errors());
 app.use(errorLogger);
+app.use(errorProcessing);
 
-app.use((err, req, res, next) => {
-  next(errorProcessing(err, res));
+app.listen(PORT, () => {
+  console.log(`App started on ${PORT} port`);
 });
-
-mongoose.connect(MONGOOSE_URL, { useNewUrlParser: true, family: 4 })
-  .then(() => {
-    app.listen(PORT, () => {
-      console.log(`App started on ${PORT} port`);
-    });
-  }).catch((e) => console.log(e));
