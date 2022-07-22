@@ -1,4 +1,4 @@
-const NotFoundErr = require('./NotFound');
+const NotFoundErr = require('../errors/NotFound');
 
 const BAD_REQ = 400;
 const WRONG_PASS_OR_EMAIL = 401;
@@ -13,11 +13,11 @@ module.exports.errorProcessing = (err, res) => {
     case 'ValidationError':
       return res.status(BAD_REQ).send({ message: `Ошибка передачи данных, все поля должны быть заполнены корректно: ${err.message}` });
     case 'BadRequest':
-      return res.status(BAD_REQ).send({ message: `Не найдено по входным данным: ${err.message}` });
+      return res.status(BAD_REQ).send({ message: `Ошибка: ${err.message}` });
     case 'CastError':
-      return res.status(BAD_REQ).send({ message: `Не найдено по входным данным: ${err.message}` });
+      return res.status(BAD_REQ).send({ message: `Ошибка: ${err.message}` });
     case 'WrongPassword':
-      return res.status(WRONG_PASS_OR_EMAIL).send({ message: `Не найдено по входным данным: ${err.message}` });
+      return res.status(WRONG_PASS_OR_EMAIL).send({ message: `Ошибка: ${err.message}` });
     case 'AuthorizationRequired':
       return res.status(AUTH_REQ).send({ message: `Ошибка: ${err.message}` });
     case 'WrongOwner':

@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
-const { checkBadData } = require('../errors/errors');
+const { checkBadData } = require('../middlewares/errors');
 const ValidationError = require('../errors/ValidationError');
 const UsedEmail = require('../errors/UsedEmail');
 
@@ -31,19 +31,16 @@ module.exports.register = (req, res, next) => {
   User.findOne({ email })
     .then((user) => {
       if (!email) {
-        const err = new ValidationError('Email не может быть пустым');
-        return next(err);
+        return Promise.reject(new ValidationError('Email не может быть пустым'));
       }
       if (user) {
-        const err = new UsedEmail('Пользователь с таким email уже есть!');
-        return next(err);
+        return Promise.reject(new UsedEmail('Пользователь с таким email уже есть!'));
       }
       return bcrypt.hash(password, 10).then((hash) => User.create({ name, email, password: hash }))
         .then((userInfo) => {
           const newUserInfo = { name: userInfo.name, _id: userInfo._id, email: userInfo.email };
           checkBadData(newUserInfo, res);
-        })
-        .catch((err) => next(err));
+        });
     })
     .catch((err) => next(err));
 };
@@ -52,10 +49,10 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new ValidationError('Email или пароль не могут быть пустыми');
+    return Promise.reject(new ValidationError('Email или пароль не могут быть пустыми'));
   }
 
-  return User.findUserByCredentials(email, password, next)
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
