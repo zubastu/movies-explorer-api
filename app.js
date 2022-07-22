@@ -8,6 +8,7 @@ const { errorProcessing } = require('./middlewares/errors');
 const { MONGOOSE_URL, PORT } = require('./utils/constants');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const cors = require('./middlewares/cors');
+const { limitter } = require('./middlewares/limitter');
 const routes = require('./routes/index');
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors);
 app.use(helmet());
+app.use(limitter);
 app.use(requestLogger);
 app.use(routes);
 app.use(errorLogger);
