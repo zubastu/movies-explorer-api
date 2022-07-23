@@ -1,7 +1,7 @@
 {
-  "name": "mesto_server",
+  "name": "movies_server",
   "version": "1.0.0",
-  "description": "mesto-backend",
+  "description": "movies-backend",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
