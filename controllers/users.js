@@ -79,5 +79,10 @@ module.exports.login = (req, res, next) => {
       };
       return res.send(userLoginData);
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new ValidationError('Ошибка валидации'));
+      }
+      return next(err);
+    });
 };
