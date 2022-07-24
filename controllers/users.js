@@ -23,7 +23,12 @@ module.exports.patchUser = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .then((user) => checkBadData(user, res))
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.code === 11000) {
+        return next(new UsedEmail('Email занят'));
+      }
+      return next(err);
+    });
 };
 
 module.exports.register = (req, res, next) => {

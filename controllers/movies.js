@@ -20,11 +20,11 @@ module.exports.deleteMovie = (req, res, next) => {
       if (movie.owner.toString() !== _id) {
         throw new WrongOwner('Для удаления необходимо быть создателем поста');
       }
-      return movie;
+      Movie.findByIdAndDelete(movieId)
+        .then(() => res.send({ message: 'Успешно' }))
+        .catch((e) => next(e));
     })
-    .then((selectedMovie) => Movie.findByIdAndDelete(selectedMovie._id)
-      .then(() => res.send({ message: 'Успешно' }))
-      .catch((e) => next(e)));
+    .catch((e) => next(e));
 };
 
 module.exports.createMovie = (req, res, next) => {
