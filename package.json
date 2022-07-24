@@ -1,7 +1,7 @@
 {
   "name": "movies_server",
   "version": "1.0.0",
-  "description": "movies-backend",
+  "description": "API для дипломного проекта movies-explorer",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
