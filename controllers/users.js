@@ -51,7 +51,6 @@ module.exports.login = (req, res, next) => {
   if (!email || !password) {
     return Promise.reject(new ValidationError('Email или пароль не могут быть пустыми'));
   }
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(

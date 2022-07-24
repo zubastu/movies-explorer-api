@@ -1,5 +1,5 @@
 const {
-  PORT = 3000, NODE_ENV, JWT_SALT, MONGOOSE_URL = 'mongodb://localhost:27017',
+  PORT = 3000, NODE_ENV, JWT_SALT, MONGOOSE_URL = 'mongodb://localhost:27017/moviesdb',
 } = process.env;
 
 module.exports = {
