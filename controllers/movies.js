@@ -1,6 +1,7 @@
 const Movie = require('../models/movies');
 const NotFoundError = require('../errors/NotFound');
 const WrongOwner = require('../errors/WrongOwner');
+const ValidationError = require('../errors/ValidationError');
 
 module.exports.getMovies = (req, res, next) => {
   const { _id } = req.user;
@@ -61,5 +62,10 @@ module.exports.createMovie = (req, res, next) => {
     .then((movie) => {
       res.send(movie);
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new ValidationError('Ошибка валидации'));
+      }
+      return next(err);
+    });
 };

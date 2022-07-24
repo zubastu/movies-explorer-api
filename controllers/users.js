@@ -5,7 +5,7 @@ const { checkBadData } = require('../middlewares/errors');
 const ValidationError = require('../errors/ValidationError');
 const UsedEmail = require('../errors/UsedEmail');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { NODE_ENV, JWT_SALT } = process.env;
 
 module.exports.getUser = (req, res, next) => {
   const { _id } = req.user;
@@ -27,6 +27,9 @@ module.exports.patchUser = (req, res, next) => {
       if (err.code === 11000) {
         return next(new UsedEmail('Email занят'));
       }
+      if (err.name === 'ValidationError') {
+        return next(new ValidationError('Ошибка валидации'));
+      }
       return next(err);
     });
 };
@@ -47,7 +50,12 @@ module.exports.register = (req, res, next) => {
           checkBadData(newUserInfo, res);
         });
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new ValidationError('Ошибка валидации'));
+      }
+      return next(err);
+    });
 };
 
 module.exports.login = (req, res, next) => {
@@ -60,7 +68,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'some',
+        NODE_ENV === 'production' ? JWT_SALT : 'some',
         { expiresIn: '7d' },
       );
       const userLoginData = {
