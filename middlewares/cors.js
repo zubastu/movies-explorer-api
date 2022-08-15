@@ -1,4 +1,9 @@
-const allowedCors = '*';
+const allowedCors = [
+  'https://movies.explorer.zubastu.nomoredomains.sbs/saved-movies',
+  'http://movies.explorer.zubastu.nomoredomains.sbs/saved-movies',
+  'http://localhost:3000',
+  'https://localhost:3000',
+];
 
 const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
 
