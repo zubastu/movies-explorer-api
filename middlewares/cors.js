@@ -1,6 +1,6 @@
  const allowedCors = [
-  'http://movies.explorer.zubastu.nomoredomains.sbs/',
-  'https://movies.explorer.zubastu.nomoredomains.sbs/',
+  'http://movies.explorer.zubastu.nomoredomains.sbs',
+  'https://movies.explorer.zubastu.nomoredomains.sbs',
   'http://localhost:3000',
   'https://localhost:3000',
 ];
