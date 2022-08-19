@@ -50,6 +50,7 @@ const movieSchema = new mongoose.Schema({
   movieId: {
     type: Number,
     required: true,
+    unicode: true
   },
   nameRU: {
     type: String,
