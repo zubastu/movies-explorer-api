@@ -3,7 +3,6 @@ const NotFoundError = require("../errors/NotFound");
 const WrongOwner = require("../errors/WrongOwner");
 const ValidationError = require("../errors/ValidationError");
 const { checkBadData } = require("../middlewares/errors");
-const UsedEmail = require("../errors/UsedEmail");
 
 module.exports.getTasks = (req, res, next) => {
   const { _id } = req.user;
@@ -21,7 +20,7 @@ module.exports.deleteTask = (req, res, next) => {
         throw new NotFoundError("Не найдено");
       }
       if (task.owner.toString() !== _id) {
-        throw new WrongOwner("Для удаления необходимо быть создателем поста");
+        throw new WrongOwner("Для удаления необходимо быть создателем задачи");
       }
       Task.findByIdAndDelete(taskId)
         .then(() => res.send({ message: "Успешно" }))
@@ -53,19 +52,30 @@ module.exports.createTask = (req, res, next) => {
 module.exports.updateTask = (req, res, next) => {
   const { taskId } = req.params;
   const { text, active, startTime, endTime, completed } = req.body;
-  Task.findByIdAndUpdate(
-    taskId,
-    { $set: { text, active, startTime, endTime, completed } },
-    { new: true, runValidators: true },
-  )
-    .then((task) => checkBadData(task, res))
-    .catch((err) => {
-      if (err.code === 11000) {
-        return next(new UsedEmail("Email занят"));
+  const { _id } = req.user;
+
+  Task.findById(taskId)
+    .then((task) => {
+      if (!task) {
+        throw new NotFoundError("Не найдено");
       }
-      if (err.name === "ValidationError") {
-        return next(new ValidationError("Ошибка валидации"));
+      if (task.owner.toString() !== _id) {
+        throw new WrongOwner(
+          "Для редактирования необходимо быть создателем задачи",
+        );
       }
-      return next(err);
-    });
+      Task.findByIdAndUpdate(
+        taskId,
+        { $set: { text, active, startTime, endTime, completed } },
+        { new: true, runValidators: true },
+      )
+        .then((task) => checkBadData(task, res))
+        .catch((err) => {
+          if (err.name === "ValidationError") {
+            return next(new ValidationError("Ошибка валидации"));
+          }
+          return next(err);
+        });
+    })
+    .catch((e) => next(e));
 };
