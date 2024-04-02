@@ -51,10 +51,10 @@ module.exports.createTask = (req, res, next) => {
 };
 
 module.exports.updateTask = (req, res, next) => {
-  const { _id } = req.user;
+  const { taskId } = req.params;
   const { text, active, startTime, endTime, completed } = req.body;
   Task.findByIdAndUpdate(
-    _id,
+    taskId,
     { $set: { text, active, startTime, endTime, completed } },
     { new: true, runValidators: true },
   )
