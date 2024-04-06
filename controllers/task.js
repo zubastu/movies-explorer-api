@@ -58,7 +58,7 @@ module.exports.createTask = (req, res, next) => {
 
 module.exports.updateTask = (req, res, next) => {
   const { taskId } = req.params;
-  const { text, active, startedTime, endTime, completed } = req.body;
+  const { text, active, startedTime, endTime, completed, order } = req.body;
   const { _id } = req.user;
 
   Task.findById(taskId)
@@ -73,7 +73,7 @@ module.exports.updateTask = (req, res, next) => {
       }
       Task.findByIdAndUpdate(
         taskId,
-        { $set: { text, active, startedTime, endTime, completed } },
+        { $set: { text, active, startedTime, endTime, completed, order } },
         { new: true, runValidators: true },
       )
         .then((task) => checkBadData(task, res))
