@@ -7,7 +7,14 @@ const { checkBadData } = require("../middlewares/errors");
 module.exports.getTasks = (req, res, next) => {
   const { _id } = req.user;
   Task.find({ owner: _id })
-    .then((movies) => res.send(movies))
+    .then((tasks) => {
+      const orderedNotCompletedTasks = tasks.map((task, index) => {
+        if (!task.active && !task.completed) {
+          task.order = index;
+        }
+      });
+      res.send(orderedNotCompletedTasks);
+    })
     .catch((e) => next(e));
 };
 

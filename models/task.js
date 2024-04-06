@@ -28,6 +28,9 @@ const cardSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
+    order: {
+      type: Number,
+    },
   },
   {
     versionKey: false,
