@@ -4,16 +4,26 @@ const WrongOwner = require("../errors/WrongOwner");
 const ValidationError = require("../errors/ValidationError");
 const { checkBadData } = require("../middlewares/errors");
 
-module.exports.getTasks = (req, res, next) => {
+module.exports.getCompletedTasks = (req, res, next) => {
   const { _id } = req.user;
   Task.find({ owner: _id })
     .then((tasks) => {
-      const orderedNotCompletedTasks = tasks.map((task, index) => {
-        if (!task.active && !task.completed) {
-          task.order = index;
-        }
-      });
-      res.send(orderedNotCompletedTasks);
+      const stagedTasks = tasks.filter(
+        (task) => task.completed && !task.active,
+      );
+      res.send(stagedTasks);
+    })
+    .catch((e) => next(e));
+};
+
+module.exports.getStagedTasks = (req, res, next) => {
+  const { _id } = req.user;
+  Task.find({ owner: _id })
+    .then((tasks) => {
+      const stagedTasks = tasks.filter(
+        (task) => !task.completed && !task.active,
+      );
+      res.send(stagedTasks);
     })
     .catch((e) => next(e));
 };
