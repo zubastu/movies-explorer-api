@@ -28,7 +28,7 @@ module.exports.getStagedTasks = (req, res, next) => {
       const stagedTasks = [...activeTask, ...inactiveTasks];
 
       const mappedStagedTasks = stagedTasks.map((task, i) => {
-        if (!task.order) {
+        if (task.order === undefined) {
           task.order = i;
         }
         return task;
