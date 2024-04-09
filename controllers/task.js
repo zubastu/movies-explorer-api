@@ -21,6 +21,11 @@ module.exports.getStagedTasks = (req, res, next) => {
   Task.find({ owner: _id })
     .then((tasks) => {
       const stagedTasks = tasks.filter((task) => !task.completed);
+      stagedTasks.forEach((task, i) => {
+        if (!task.order) {
+          task.order = i;
+        }
+      });
       res.send(stagedTasks);
     })
     .catch((e) => next(e));
