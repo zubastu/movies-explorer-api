@@ -20,13 +20,19 @@ module.exports.getStagedTasks = (req, res, next) => {
   const { _id } = req.user;
   Task.find({ owner: _id })
     .then((tasks) => {
-      const stagedTasks = tasks.filter((task) => !task.completed);
+      const stagedTasksList = tasks.filter((task) => !task.completed);
+
+      const inactiveTasks = stagedTasksList.filter((task) => !task.active);
+      const activeTask = stagedTasksList.filter((task) => task.active);
+
+      const stagedTasks = [...activeTask, ...inactiveTasks];
+
       stagedTasks.forEach((task, i) => {
         if (!task.order) {
           task.order = i;
         }
       });
-      res.send(stagedTasks);
+      res.send(stagedTasksList);
     })
     .catch((e) => next(e));
 };
