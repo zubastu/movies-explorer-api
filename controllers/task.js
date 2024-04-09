@@ -28,9 +28,7 @@ module.exports.getStagedTasks = (req, res, next) => {
       const stagedTasks = [...activeTask, ...inactiveTasks];
 
       stagedTasks.forEach((task, i) => {
-        if (!task.order) {
-          task.order = i;
-        }
+        task.order = i;
       });
       res.send(stagedTasksList);
     })
