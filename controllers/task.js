@@ -34,7 +34,9 @@ module.exports.getStagedTasks = (req, res, next) => {
         return task;
       });
 
-      const sortedStagedTasks = mappedStagedTasks.sort((a, b) => a - b);
+      const sortedStagedTasks = mappedStagedTasks.sort(
+        (a, b) => a.order - b.order,
+      );
       res.send(sortedStagedTasks);
     })
     .catch((e) => next(e));
