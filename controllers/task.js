@@ -114,9 +114,7 @@ module.exports.moveTask = (req, res, next) => {
 
   const { dragTask, dropTask } = req.body;
 
-  Task.find()
-    .where("owner")
-    .in(_id)
+  Task.find({ owner: _id })
     .then((tasks) => {
       if (!tasks) {
         throw new NotFoundError("Не найдено");
