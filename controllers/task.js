@@ -1,4 +1,5 @@
 const Task = require("../models/task");
+const mongoose = require("mongoose");
 const NotFoundError = require("../errors/NotFound");
 const WrongOwner = require("../errors/WrongOwner");
 const ValidationError = require("../errors/ValidationError");
@@ -129,8 +130,16 @@ module.exports.moveTask = (req, res, next) => {
       delete dragTaskItem._id;
       delete dropTaskItem._id;
 
-      Task.findByIdAndUpdate(dragTask, { $set: { ...dragTask } });
-      Task.findByIdAndUpdate(dropTask, { $set: { ...dropTask } });
+      Task.findByIdAndUpdate(
+        mongoose.mongo.BSONPure.ObjectID.fromHexString(dragTask),
+        {
+          $set: { ...dragTask },
+        },
+      );
+      Task.findByIdAndUpdate(
+        mongoose.mongo.BSONPure.ObjectID.fromHexString(dropTask),
+        { $set: { ...dropTask } },
+      );
 
       return checkBadData(tasks, res);
     })
