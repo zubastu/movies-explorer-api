@@ -126,6 +126,9 @@ module.exports.moveTask = (req, res, next) => {
       dropTaskItem.order = dragTaskItem.order;
       dragTaskItem.order = tmpOrder;
 
+      delete dragTaskItem._id;
+      delete dropTaskItem._id;
+
       Task.findByIdAndUpdate(dragTask, { $set: { ...dragTask } });
       Task.findByIdAndUpdate(dropTask, { $set: { ...dropTask } });
 
