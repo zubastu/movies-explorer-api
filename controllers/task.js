@@ -114,33 +114,29 @@ module.exports.moveTask = (req, res, next) => {
 
   const { dragTask, dropTask } = req.body;
 
-  const ids = [dragTask, dropTask];
-
   Task.find()
     .where("owner")
     .in(_id)
-    .then((task) => {
-      if (!task) {
+    .then((tasks) => {
+      if (!tasks) {
         throw new NotFoundError("Не найдено");
       }
+      const dragTaskItem = tasks.find((task) => task._id === dragTaskItem);
+      const dropTaskItem = tasks.find((task) => task._id === dropTaskItem);
 
-      Task.find()
-        .where("_id")
-        .in(ids)
-        .then((tasks) => {
-          const [dragTask, dropTask] = tasks;
-          const tmpOrder = dropTask.order;
-          dropTask.order = dragTask.order;
-          dragTask.order = tmpOrder;
+      const tmpOrder = dropTaskItem.order;
+      dropTaskItem.order = dragTaskItem.order;
+      dragTaskItem.order = tmpOrder;
 
-          return checkBadData(tasks, res);
-        })
-        .catch((err) => {
-          if (err.name === "ValidationError") {
-            return next(new ValidationError("Ошибка валидации"));
-          }
-          return next(err);
-        });
+      Task.findByIdAndUpdate(dragTask, { $set: { ...dragTask } });
+      Task.findByIdAndUpdate(dropTask, { $set: { ...dropTask } });
+
+      return checkBadData(tasks, res);
     })
-    .catch((e) => next(e));
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return next(new ValidationError("Ошибка валидации"));
+      }
+      return next(err);
+    });
 };
