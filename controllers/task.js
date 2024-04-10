@@ -108,3 +108,39 @@ module.exports.updateTask = (req, res, next) => {
     })
     .catch((e) => next(e));
 };
+
+module.exports.moveTask = (req, res, next) => {
+  const { _id } = req.user;
+
+  const { dragTask, dropTask } = req.body;
+
+  const ids = [dragTask, dropTask];
+
+  Task.find()
+    .where("owner")
+    .in(_id)
+    .then((task) => {
+      if (!task) {
+        throw new NotFoundError("Не найдено");
+      }
+
+      Task.find()
+        .where("_id")
+        .in(ids)
+        .then((tasks) => {
+          const [dragTask, dropTask] = tasks;
+          const tmpOrder = dropTask.order;
+          dropTask.order = dragTask.order;
+          dragTask.order = tmpOrder;
+
+          return checkBadData(tasks, res);
+        })
+        .catch((err) => {
+          if (err.name === "ValidationError") {
+            return next(new ValidationError("Ошибка валидации"));
+          }
+          return next(err);
+        });
+    })
+    .catch((e) => next(e));
+};
