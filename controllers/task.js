@@ -114,6 +114,8 @@ module.exports.moveTask = (req, res, next) => {
 
   const { dragTask, dropTask } = req.body;
 
+  console.log(dragTask, dropTask, req.body);
+
   Task.find({ owner: _id })
     .then((tasks) => {
       if (!tasks) {
